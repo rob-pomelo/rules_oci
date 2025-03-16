@@ -93,6 +93,7 @@ def oci_image(
         entrypoint = None,
         exposed_ports = None,
         volumes = None,
+        tags = [],
         **kwargs):
     """Macro wrapper around [oci_image_rule](#oci_image_rule).
 
@@ -196,6 +197,12 @@ def oci_image(
         )
         volumes = volumes_label
 
+    all_tags = tags
+    if "manual" not in tags:
+        all_tags = tags + ["manual"]
+    if "no-remote-cache" not in tags:
+        all_tags = tags + ["no-remote-cache"]
+
     oci_image_rule(
         name = name,
         created = created,
@@ -206,11 +213,13 @@ def oci_image(
         entrypoint = entrypoint,
         exposed_ports = exposed_ports,
         volumes = volumes,
+        tags = all_tags,
         **kwargs
     )
 
     _digest(
         name = name,
+        tags = all_tags,
         **forwarded_kwargs
     )
 
@@ -246,7 +255,7 @@ def oci_push(name, remote_tags = None, **kwargs):
         **kwargs
     )
 
-def oci_load(name, repo_tags = None, **kwargs):
+def oci_load(name, repo_tags = None, tags = [], **kwargs):
     """Macro wrapper around [oci_tarball_rule](#oci_tarball_rule).
 
     Allows the repo_tags attribute to be a list of strings in addition to a text file.
@@ -272,8 +281,15 @@ def oci_load(name, repo_tags = None, **kwargs):
         )
         repo_tags = tags_label
 
+    all_tags = tags
+    if "manual" not in tags:
+        all_tags = tags + ["manual"]
+    if "no-remote-cache" not in tags:
+        all_tags = tags + ["no-remote-cache"]
+
     oci_tarball_rule(
         name = name,
         repo_tags = repo_tags,
+        tags = all_tags,
         **kwargs
     )
